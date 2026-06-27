@@ -103,9 +103,8 @@ function CertificatesPage() {
         event_id: eventId,
         event_name_snapshot: event?.name ?? null,
         metadata: description ? { description } : {},
-        // Trigger generates a code when this is empty. Send a placeholder
-        // value the trigger replaces, satisfying the NOT NULL constraint.
-        code: code || "AUTO",
+        // Trigger replaces an empty code with an auto-generated unique one.
+        code: code || "",
       })
       .select("id, code, recipient_name, recipient_email, event_id, event_name_snapshot, issued_at")
       .single();
