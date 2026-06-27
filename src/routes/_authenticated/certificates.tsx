@@ -94,17 +94,19 @@ function CertificatesPage() {
     if (!eventId) return toast.error("Select an event.");
     const event = events.data?.find((ev) => ev.id === eventId);
     setSubmitting(true);
-    const payload: Record<string, unknown> = {
-      recipient_name: recipientName.trim(),
-      recipient_email: recipientEmail.trim() || null,
-      event_id: eventId,
-      event_name_snapshot: event?.name ?? null,
-      metadata: description ? { description } : {},
-    };
-    if (customCode.trim()) payload.code = customCode.trim().toUpperCase();
+    const code = customCode.trim() ? customCode.trim().toUpperCase() : "";
     const { data, error } = await supabase
       .from("certificates")
-      .insert(payload)
+      .insert({
+        recipient_name: recipientName.trim(),
+        recipient_email: recipientEmail.trim() || null,
+        event_id: eventId,
+        event_name_snapshot: event?.name ?? null,
+        metadata: description ? { description } : {},
+        // Trigger generates a code when this is empty. Send a placeholder
+        // value the trigger replaces, satisfying the NOT NULL constraint.
+        code: code || "AUTO",
+      })
       .select("id, code, recipient_name, recipient_email, event_id, event_name_snapshot, issued_at")
       .single();
     setSubmitting(false);
