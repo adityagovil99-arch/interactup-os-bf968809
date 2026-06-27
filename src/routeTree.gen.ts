@@ -20,7 +20,6 @@ import { Route as AuthenticatedOutreachRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedMentorsRouteImport } from './routes/_authenticated/mentors'
 import { Route as AuthenticatedMarketingRouteImport } from './routes/_authenticated/marketing'
 import { Route as AuthenticatedInternshipsRouteImport } from './routes/_authenticated/internships'
-import { Route as AuthenticatedEventsRouteImport } from './routes/_authenticated/events'
 import { Route as AuthenticatedDocumentsRouteImport } from './routes/_authenticated/documents'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCompaniesRouteImport } from './routes/_authenticated/companies'
@@ -83,11 +82,6 @@ const AuthenticatedInternshipsRoute =
     path: '/internships',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedEventsRoute = AuthenticatedEventsRouteImport.update({
-  id: '/events',
-  path: '/events',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedDocumentsRoute = AuthenticatedDocumentsRouteImport.update({
   id: '/documents',
   path: '/documents',
@@ -129,7 +123,6 @@ export interface FileRoutesByFullPath {
   '/companies': typeof AuthenticatedCompaniesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/documents': typeof AuthenticatedDocumentsRoute
-  '/events': typeof AuthenticatedEventsRoute
   '/internships': typeof AuthenticatedInternshipsRoute
   '/marketing': typeof AuthenticatedMarketingRoute
   '/mentors': typeof AuthenticatedMentorsRoute
@@ -148,7 +141,6 @@ export interface FileRoutesByTo {
   '/companies': typeof AuthenticatedCompaniesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/documents': typeof AuthenticatedDocumentsRoute
-  '/events': typeof AuthenticatedEventsRoute
   '/internships': typeof AuthenticatedInternshipsRoute
   '/marketing': typeof AuthenticatedMarketingRoute
   '/mentors': typeof AuthenticatedMentorsRoute
@@ -169,7 +161,6 @@ export interface FileRoutesById {
   '/_authenticated/companies': typeof AuthenticatedCompaniesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/documents': typeof AuthenticatedDocumentsRoute
-  '/_authenticated/events': typeof AuthenticatedEventsRoute
   '/_authenticated/internships': typeof AuthenticatedInternshipsRoute
   '/_authenticated/marketing': typeof AuthenticatedMarketingRoute
   '/_authenticated/mentors': typeof AuthenticatedMentorsRoute
@@ -190,7 +181,6 @@ export interface FileRouteTypes {
     | '/companies'
     | '/dashboard'
     | '/documents'
-    | '/events'
     | '/internships'
     | '/marketing'
     | '/mentors'
@@ -209,7 +199,6 @@ export interface FileRouteTypes {
     | '/companies'
     | '/dashboard'
     | '/documents'
-    | '/events'
     | '/internships'
     | '/marketing'
     | '/mentors'
@@ -229,7 +218,6 @@ export interface FileRouteTypes {
     | '/_authenticated/companies'
     | '/_authenticated/dashboard'
     | '/_authenticated/documents'
-    | '/_authenticated/events'
     | '/_authenticated/internships'
     | '/_authenticated/marketing'
     | '/_authenticated/mentors'
@@ -325,13 +313,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedInternshipsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/events': {
-      id: '/_authenticated/events'
-      path: '/events'
-      fullPath: '/events'
-      preLoaderRoute: typeof AuthenticatedEventsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/documents': {
       id: '/_authenticated/documents'
       path: '/documents'
@@ -384,7 +365,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCompaniesRoute: typeof AuthenticatedCompaniesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDocumentsRoute: typeof AuthenticatedDocumentsRoute
-  AuthenticatedEventsRoute: typeof AuthenticatedEventsRoute
   AuthenticatedInternshipsRoute: typeof AuthenticatedInternshipsRoute
   AuthenticatedMarketingRoute: typeof AuthenticatedMarketingRoute
   AuthenticatedMentorsRoute: typeof AuthenticatedMentorsRoute
@@ -402,7 +382,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCompaniesRoute: AuthenticatedCompaniesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDocumentsRoute: AuthenticatedDocumentsRoute,
-  AuthenticatedEventsRoute: AuthenticatedEventsRoute,
   AuthenticatedInternshipsRoute: AuthenticatedInternshipsRoute,
   AuthenticatedMarketingRoute: AuthenticatedMarketingRoute,
   AuthenticatedMentorsRoute: AuthenticatedMentorsRoute,
