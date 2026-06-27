@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as EventsRouteImport } from './routes/events'
+import { Route as CityClubRouteImport } from './routes/city-club'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -37,6 +38,11 @@ const VerifyRoute = VerifyRouteImport.update({
 const EventsRoute = EventsRouteImport.update({
   id: '/events',
   path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CityClubRoute = CityClubRouteImport.update({
+  id: '/city-club',
+  path: '/city-club',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -129,6 +135,7 @@ const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/city-club': typeof CityClubRoute
   '/events': typeof EventsRoute
   '/verify': typeof VerifyRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
@@ -149,6 +156,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/city-club': typeof CityClubRoute
   '/events': typeof EventsRoute
   '/verify': typeof VerifyRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
@@ -171,6 +179,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/city-club': typeof CityClubRoute
   '/events': typeof EventsRoute
   '/verify': typeof VerifyRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
@@ -193,6 +202,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/city-club'
     | '/events'
     | '/verify'
     | '/analytics'
@@ -213,6 +223,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/city-club'
     | '/events'
     | '/verify'
     | '/analytics'
@@ -234,6 +245,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/city-club'
     | '/events'
     | '/verify'
     | '/_authenticated/analytics'
@@ -256,6 +268,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  CityClubRoute: typeof CityClubRoute
   EventsRoute: typeof EventsRoute
   VerifyRoute: typeof VerifyRoute
 }
@@ -274,6 +287,13 @@ declare module '@tanstack/react-router' {
       path: '/events'
       fullPath: '/events'
       preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/city-club': {
+      id: '/city-club'
+      path: '/city-club'
+      fullPath: '/city-club'
+      preLoaderRoute: typeof CityClubRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -439,6 +459,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  CityClubRoute: CityClubRoute,
   EventsRoute: EventsRoute,
   VerifyRoute: VerifyRoute,
 }
