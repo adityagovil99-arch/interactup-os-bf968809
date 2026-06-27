@@ -14,27 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          description: string | null
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          description?: string | null
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value: Json
+        }
+        Update: {
+          description?: string | null
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
       certificates: {
         Row: {
+          code: string
           event_id: string
+          event_name_snapshot: string | null
           file_url: string | null
           id: string
           issued_at: string
-          member_id: string
+          issued_by: string | null
+          member_id: string | null
+          metadata: Json
+          recipient_email: string | null
+          recipient_name: string | null
         }
         Insert: {
+          code: string
           event_id: string
+          event_name_snapshot?: string | null
           file_url?: string | null
           id?: string
           issued_at?: string
-          member_id: string
+          issued_by?: string | null
+          member_id?: string | null
+          metadata?: Json
+          recipient_email?: string | null
+          recipient_name?: string | null
         }
         Update: {
+          code?: string
           event_id?: string
+          event_name_snapshot?: string | null
           file_url?: string | null
           id?: string
           issued_at?: string
-          member_id?: string
+          issued_by?: string | null
+          member_id?: string | null
+          metadata?: Json
+          recipient_email?: string | null
+          recipient_name?: string | null
         }
         Relationships: [
           {
@@ -45,6 +87,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      city_club_applications: {
+        Row: {
+          applicant_email: string
+          applicant_name: string
+          applicant_phone: string | null
+          applicant_user_id: string | null
+          city: string
+          committed_members: number
+          country: string | null
+          created_at: string
+          id: string
+          motivation: string | null
+          reviewer_notes: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          applicant_email: string
+          applicant_name: string
+          applicant_phone?: string | null
+          applicant_user_id?: string | null
+          city: string
+          committed_members?: number
+          country?: string | null
+          created_at?: string
+          id?: string
+          motivation?: string | null
+          reviewer_notes?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          applicant_email?: string
+          applicant_name?: string
+          applicant_phone?: string | null
+          applicant_user_id?: string | null
+          city?: string
+          committed_members?: number
+          country?: string | null
+          created_at?: string
+          id?: string
+          motivation?: string | null
+          reviewer_notes?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       companies: {
         Row: {
@@ -206,6 +296,53 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      event_registrations: {
+        Row: {
+          created_at: string
+          email: string
+          event_id: string
+          full_name: string
+          id: string
+          notes: string | null
+          phone: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          event_id: string
+          full_name: string
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          event_id?: string
+          full_name?: string
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_registrations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       event_sponsors: {
         Row: {
@@ -707,6 +844,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_certificate_code: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -9,6 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerifyRouteImport } from './routes/verify'
+import { Route as EventsRouteImport } from './routes/events'
+import { Route as CityClubRouteImport } from './routes/city-club'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -20,7 +23,6 @@ import { Route as AuthenticatedOutreachRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedMentorsRouteImport } from './routes/_authenticated/mentors'
 import { Route as AuthenticatedMarketingRouteImport } from './routes/_authenticated/marketing'
 import { Route as AuthenticatedInternshipsRouteImport } from './routes/_authenticated/internships'
-import { Route as AuthenticatedEventsRouteImport } from './routes/_authenticated/events'
 import { Route as AuthenticatedDocumentsRouteImport } from './routes/_authenticated/documents'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCompaniesRouteImport } from './routes/_authenticated/companies'
@@ -28,6 +30,21 @@ import { Route as AuthenticatedCommunityRouteImport } from './routes/_authentica
 import { Route as AuthenticatedCertificatesRouteImport } from './routes/_authenticated/certificates'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 
+const VerifyRoute = VerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventsRoute = EventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CityClubRoute = CityClubRouteImport.update({
+  id: '/city-club',
+  path: '/city-club',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -83,11 +100,6 @@ const AuthenticatedInternshipsRoute =
     path: '/internships',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedEventsRoute = AuthenticatedEventsRouteImport.update({
-  id: '/events',
-  path: '/events',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedDocumentsRoute = AuthenticatedDocumentsRouteImport.update({
   id: '/documents',
   path: '/documents',
@@ -123,13 +135,15 @@ const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/city-club': typeof CityClubRoute
+  '/events': typeof EventsRoute
+  '/verify': typeof VerifyRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/certificates': typeof AuthenticatedCertificatesRoute
   '/community': typeof AuthenticatedCommunityRoute
   '/companies': typeof AuthenticatedCompaniesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/documents': typeof AuthenticatedDocumentsRoute
-  '/events': typeof AuthenticatedEventsRoute
   '/internships': typeof AuthenticatedInternshipsRoute
   '/marketing': typeof AuthenticatedMarketingRoute
   '/mentors': typeof AuthenticatedMentorsRoute
@@ -142,13 +156,15 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/city-club': typeof CityClubRoute
+  '/events': typeof EventsRoute
+  '/verify': typeof VerifyRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/certificates': typeof AuthenticatedCertificatesRoute
   '/community': typeof AuthenticatedCommunityRoute
   '/companies': typeof AuthenticatedCompaniesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/documents': typeof AuthenticatedDocumentsRoute
-  '/events': typeof AuthenticatedEventsRoute
   '/internships': typeof AuthenticatedInternshipsRoute
   '/marketing': typeof AuthenticatedMarketingRoute
   '/mentors': typeof AuthenticatedMentorsRoute
@@ -163,13 +179,15 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/city-club': typeof CityClubRoute
+  '/events': typeof EventsRoute
+  '/verify': typeof VerifyRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/certificates': typeof AuthenticatedCertificatesRoute
   '/_authenticated/community': typeof AuthenticatedCommunityRoute
   '/_authenticated/companies': typeof AuthenticatedCompaniesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/documents': typeof AuthenticatedDocumentsRoute
-  '/_authenticated/events': typeof AuthenticatedEventsRoute
   '/_authenticated/internships': typeof AuthenticatedInternshipsRoute
   '/_authenticated/marketing': typeof AuthenticatedMarketingRoute
   '/_authenticated/mentors': typeof AuthenticatedMentorsRoute
@@ -184,13 +202,15 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/city-club'
+    | '/events'
+    | '/verify'
     | '/analytics'
     | '/certificates'
     | '/community'
     | '/companies'
     | '/dashboard'
     | '/documents'
-    | '/events'
     | '/internships'
     | '/marketing'
     | '/mentors'
@@ -203,13 +223,15 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/city-club'
+    | '/events'
+    | '/verify'
     | '/analytics'
     | '/certificates'
     | '/community'
     | '/companies'
     | '/dashboard'
     | '/documents'
-    | '/events'
     | '/internships'
     | '/marketing'
     | '/mentors'
@@ -223,13 +245,15 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/city-club'
+    | '/events'
+    | '/verify'
     | '/_authenticated/analytics'
     | '/_authenticated/certificates'
     | '/_authenticated/community'
     | '/_authenticated/companies'
     | '/_authenticated/dashboard'
     | '/_authenticated/documents'
-    | '/_authenticated/events'
     | '/_authenticated/internships'
     | '/_authenticated/marketing'
     | '/_authenticated/mentors'
@@ -244,10 +268,34 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  CityClubRoute: typeof CityClubRoute
+  EventsRoute: typeof EventsRoute
+  VerifyRoute: typeof VerifyRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verify': {
+      id: '/verify'
+      path: '/verify'
+      fullPath: '/verify'
+      preLoaderRoute: typeof VerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/events': {
+      id: '/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/city-club': {
+      id: '/city-club'
+      path: '/city-club'
+      fullPath: '/city-club'
+      preLoaderRoute: typeof CityClubRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -325,13 +373,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedInternshipsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/events': {
-      id: '/_authenticated/events'
-      path: '/events'
-      fullPath: '/events'
-      preLoaderRoute: typeof AuthenticatedEventsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/documents': {
       id: '/_authenticated/documents'
       path: '/documents'
@@ -384,7 +425,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCompaniesRoute: typeof AuthenticatedCompaniesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDocumentsRoute: typeof AuthenticatedDocumentsRoute
-  AuthenticatedEventsRoute: typeof AuthenticatedEventsRoute
   AuthenticatedInternshipsRoute: typeof AuthenticatedInternshipsRoute
   AuthenticatedMarketingRoute: typeof AuthenticatedMarketingRoute
   AuthenticatedMentorsRoute: typeof AuthenticatedMentorsRoute
@@ -402,7 +442,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCompaniesRoute: AuthenticatedCompaniesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDocumentsRoute: AuthenticatedDocumentsRoute,
-  AuthenticatedEventsRoute: AuthenticatedEventsRoute,
   AuthenticatedInternshipsRoute: AuthenticatedInternshipsRoute,
   AuthenticatedMarketingRoute: AuthenticatedMarketingRoute,
   AuthenticatedMentorsRoute: AuthenticatedMentorsRoute,
@@ -420,6 +459,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  CityClubRoute: CityClubRoute,
+  EventsRoute: EventsRoute,
+  VerifyRoute: VerifyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

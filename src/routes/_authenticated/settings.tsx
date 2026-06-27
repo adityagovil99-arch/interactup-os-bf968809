@@ -113,6 +113,68 @@ function SettingsPage() {
           </Button>
         </div>
       </Card>
+
+      {roles.includes("admin") && <CityClubThresholdCard />}
     </div>
+  );
+}
+
+function CityClubThresholdCard() {
+  const qc = useQueryClient();
+  const setting = useQuery({
+    queryKey: ["setting", "city_club_min_members"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "city_club_min_members")
+        .maybeSingle();
+      const v = data?.value as number | string | undefined;
+      return typeof v === "number" ? v : parseInt(String(v ?? 20), 10) || 20;
+    },
+  });
+  const [value, setValue] = useState<number>(20);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (typeof setting.data === "number") setValue(setting.data);
+  }, [setting.data]);
+
+  const save = async () => {
+    setSaving(true);
+    const { error } = await supabase
+      .from("app_settings")
+      .upsert({
+        key: "city_club_min_members",
+        value: value as unknown as never,
+        description: "Minimum committed members required to apply for a city club license",
+      });
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    toast.success("Updated");
+    qc.invalidateQueries({ queryKey: ["setting", "city_club_min_members"] });
+  };
+
+  return (
+    <Card className="p-6">
+      <h3 className="font-display text-base font-semibold">City club threshold</h3>
+      <p className="text-sm text-muted-foreground mt-1">
+        Minimum committed members required for someone to apply to open an InteractUp club in their city.
+      </p>
+      <div className="flex items-end gap-3 mt-4 max-w-sm">
+        <div className="space-y-2 flex-1">
+          <Label>Minimum members</Label>
+          <Input
+            type="number"
+            min={1}
+            value={value}
+            onChange={(e) => setValue(parseInt(e.target.value || "0", 10))}
+          />
+        </div>
+        <Button onClick={save} disabled={saving} className="bg-accent text-accent-foreground hover:bg-accent/90">
+          {saving ? "Saving…" : "Save"}
+        </Button>
+      </div>
+    </Card>
   );
 }
