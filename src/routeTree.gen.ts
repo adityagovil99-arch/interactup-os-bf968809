@@ -22,6 +22,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedOutreachRouteImport } from './routes/_authenticated/outreach'
 import { Route as AuthenticatedMentorsRouteImport } from './routes/_authenticated/mentors'
 import { Route as AuthenticatedMarketingRouteImport } from './routes/_authenticated/marketing'
+import { Route as AuthenticatedManageEventsRouteImport } from './routes/_authenticated/manage-events'
 import { Route as AuthenticatedInternshipsRouteImport } from './routes/_authenticated/internships'
 import { Route as AuthenticatedDocumentsRouteImport } from './routes/_authenticated/documents'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -94,6 +95,12 @@ const AuthenticatedMarketingRoute = AuthenticatedMarketingRouteImport.update({
   path: '/marketing',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedManageEventsRoute =
+  AuthenticatedManageEventsRouteImport.update({
+    id: '/manage-events',
+    path: '/manage-events',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedInternshipsRoute =
   AuthenticatedInternshipsRouteImport.update({
     id: '/internships',
@@ -145,6 +152,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/documents': typeof AuthenticatedDocumentsRoute
   '/internships': typeof AuthenticatedInternshipsRoute
+  '/manage-events': typeof AuthenticatedManageEventsRoute
   '/marketing': typeof AuthenticatedMarketingRoute
   '/mentors': typeof AuthenticatedMentorsRoute
   '/outreach': typeof AuthenticatedOutreachRoute
@@ -166,6 +174,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/documents': typeof AuthenticatedDocumentsRoute
   '/internships': typeof AuthenticatedInternshipsRoute
+  '/manage-events': typeof AuthenticatedManageEventsRoute
   '/marketing': typeof AuthenticatedMarketingRoute
   '/mentors': typeof AuthenticatedMentorsRoute
   '/outreach': typeof AuthenticatedOutreachRoute
@@ -189,6 +198,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/documents': typeof AuthenticatedDocumentsRoute
   '/_authenticated/internships': typeof AuthenticatedInternshipsRoute
+  '/_authenticated/manage-events': typeof AuthenticatedManageEventsRoute
   '/_authenticated/marketing': typeof AuthenticatedMarketingRoute
   '/_authenticated/mentors': typeof AuthenticatedMentorsRoute
   '/_authenticated/outreach': typeof AuthenticatedOutreachRoute
@@ -212,6 +222,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/documents'
     | '/internships'
+    | '/manage-events'
     | '/marketing'
     | '/mentors'
     | '/outreach'
@@ -233,6 +244,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/documents'
     | '/internships'
+    | '/manage-events'
     | '/marketing'
     | '/mentors'
     | '/outreach'
@@ -255,6 +267,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/documents'
     | '/_authenticated/internships'
+    | '/_authenticated/manage-events'
     | '/_authenticated/marketing'
     | '/_authenticated/mentors'
     | '/_authenticated/outreach'
@@ -366,6 +379,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMarketingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/manage-events': {
+      id: '/_authenticated/manage-events'
+      path: '/manage-events'
+      fullPath: '/manage-events'
+      preLoaderRoute: typeof AuthenticatedManageEventsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/internships': {
       id: '/_authenticated/internships'
       path: '/internships'
@@ -426,6 +446,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDocumentsRoute: typeof AuthenticatedDocumentsRoute
   AuthenticatedInternshipsRoute: typeof AuthenticatedInternshipsRoute
+  AuthenticatedManageEventsRoute: typeof AuthenticatedManageEventsRoute
   AuthenticatedMarketingRoute: typeof AuthenticatedMarketingRoute
   AuthenticatedMentorsRoute: typeof AuthenticatedMentorsRoute
   AuthenticatedOutreachRoute: typeof AuthenticatedOutreachRoute
@@ -443,6 +464,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDocumentsRoute: AuthenticatedDocumentsRoute,
   AuthenticatedInternshipsRoute: AuthenticatedInternshipsRoute,
+  AuthenticatedManageEventsRoute: AuthenticatedManageEventsRoute,
   AuthenticatedMarketingRoute: AuthenticatedMarketingRoute,
   AuthenticatedMentorsRoute: AuthenticatedMentorsRoute,
   AuthenticatedOutreachRoute: AuthenticatedOutreachRoute,

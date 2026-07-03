@@ -22,7 +22,7 @@ const NAV: Item[] = [
   { label: "Sponsors", to: "/sponsors", icon: Trophy },
   { label: "Companies", to: "/companies", icon: Building2 },
   { label: "Outreach", to: "/outreach", icon: Mail },
-  { label: "Events", to: "/events", icon: Calendar },
+  { label: "Events", to: "/manage-events", icon: Calendar },
   { label: "Community", to: "/community", icon: Users },
   { label: "Mentors", to: "/mentors", icon: GraduationCap },
   { label: "Internships", to: "/internships", icon: Briefcase },
