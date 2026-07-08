@@ -61,7 +61,7 @@ function ManageEventsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("events")
-        .select("id, name, event_date, venue, description, expected_attendees, budget")
+        .select("id, name, event_date, venue, description, prize_money")
         .order("event_date", { ascending: false, nullsFirst: false });
       if (error) throw error;
       return (data as EventRow[]) ?? [];
@@ -109,8 +109,7 @@ function ManageEventsPage() {
       event_date: ev.event_date ?? "",
       venue: ev.venue ?? "",
       description: ev.description ?? "",
-      expected_attendees: ev.expected_attendees?.toString() ?? "",
-      budget: ev.budget?.toString() ?? "",
+      prize_money: ev.prize_money?.toString() ?? "",
     });
     setDialogOpen(true);
   };
@@ -124,14 +123,18 @@ function ManageEventsPage() {
       event_date: form.event_date || null,
       venue: form.venue.trim() || null,
       description: form.description.trim() || null,
-      expected_attendees: form.expected_attendees ? Number(form.expected_attendees) : null,
-      budget: form.budget ? Number(form.budget) : null,
+      prize_money: form.prize_money ? Number(form.prize_money) : null,
     };
     const { error } = editing
       ? await supabase.from("events").update(payload).eq("id", editing.id)
       : await supabase.from("events").insert(payload);
     setSubmitting(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      console.error("[events] save failed", error);
+      return toast.error(
+        `${error.message}${error.code ? ` (code ${error.code})` : ""}${error.hint ? ` — ${error.hint}` : ""}`,
+      );
+    }
     toast.success(editing ? "Event updated" : "Event created");
     setDialogOpen(false);
     qc.invalidateQueries({ queryKey: ["events"] });
