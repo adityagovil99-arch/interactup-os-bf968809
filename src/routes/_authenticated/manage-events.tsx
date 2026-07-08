@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
@@ -16,7 +17,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Calendar, MapPin, Users, Plus, Pencil, Trash2, Lock, Search } from "lucide-react";
+import { Calendar, MapPin, Trophy, Plus, Pencil, Trash2, Lock, Search, FileText } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/manage-events")({
@@ -31,6 +32,7 @@ type EventRow = {
   venue: string | null;
   description: string | null;
   prize_money: number | null;
+  status: "draft" | "published";
 };
 
 type FormState = {
@@ -49,7 +51,7 @@ function ManageEventsPage() {
   const { isStaff } = useAuth();
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<"all" | "upcoming" | "past">("all");
+  const [filter, setFilter] = useState<"all" | "published" | "draft" | "upcoming" | "past">("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<EventRow | null>(null);
   const [form, setForm] = useState<FormState>(empty);
@@ -64,7 +66,7 @@ function ManageEventsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("events")
-        .select("id, name, event_date, venue, description, prize_money")
+        .select("id, name, event_date, venue, description, prize_money, status")
         .order("event_date", { ascending: false, nullsFirst: false });
       if (error) throw error;
       return (data as EventRow[]) ?? [];
@@ -76,8 +78,10 @@ function ManageEventsPage() {
     const today = new Date().toISOString().slice(0, 10);
     const q = search.toLowerCase();
     return list.filter((ev) => {
-      if (filter === "upcoming" && (!ev.event_date || ev.event_date < today)) return false;
-      if (filter === "past" && (!ev.event_date || ev.event_date >= today)) return false;
+      if (filter === "published" && ev.status !== "published") return false;
+      if (filter === "draft" && ev.status !== "draft") return false;
+      if (filter === "upcoming" && (ev.status !== "published" || !ev.event_date || ev.event_date < today)) return false;
+      if (filter === "past" && (ev.status !== "published" || !ev.event_date || ev.event_date >= today)) return false;
       if (!q) return true;
       return (
         ev.name.toLowerCase().includes(q) ||
@@ -117,16 +121,16 @@ function ManageEventsPage() {
     setDialogOpen(true);
   };
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.name.trim()) return toast.error("Event name required.");
+  const saveEvent = async (status: "draft" | "published") => {
+    if (status === "published" && !form.name.trim()) return toast.error("Event name required before publishing.");
     setSubmitting(true);
     const payload = {
-      name: form.name.trim(),
+      name: form.name.trim() || "Untitled draft",
       event_date: form.event_date || null,
       venue: form.venue.trim() || null,
       description: form.description.trim() || null,
       prize_money: form.prize_money ? Number(form.prize_money) : null,
+      status,
     };
     const { error } = editing
       ? await supabase.from("events").update(payload).eq("id", editing.id)
@@ -138,10 +142,15 @@ function ManageEventsPage() {
         `${error.message}${error.code ? ` (code ${error.code})` : ""}${error.hint ? ` — ${error.hint}` : ""}`,
       );
     }
-    toast.success(editing ? "Event updated" : "Event created");
+    toast.success(status === "draft" ? "Draft saved" : editing ? "Event published" : "Event created");
     setDialogOpen(false);
     qc.invalidateQueries({ queryKey: ["events"] });
     qc.invalidateQueries({ queryKey: ["public", "events"] });
+  };
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    void saveEvent("published");
   };
 
   const confirmDelete = async () => {
@@ -177,7 +186,7 @@ function ManageEventsPage() {
           />
         </div>
         <div className="flex gap-1 rounded-md bg-muted p-1">
-          {(["all", "upcoming", "past"] as const).map((k) => (
+          {(["all", "published", "draft", "upcoming", "past"] as const).map((k) => (
             <button
               key={k}
               onClick={() => setFilter(k)}
@@ -188,6 +197,21 @@ function ManageEventsPage() {
               {k}
             </button>
           ))}
+        </div>
+      </Card>
+
+      <Card className="p-5 bg-card/70">
+        <div className="flex items-start gap-3">
+          <FileText className="size-5 text-accent mt-0.5" />
+          <div>
+            <h2 className="font-display font-semibold">How to upload an event</h2>
+            <ol className="mt-2 grid gap-1 text-sm text-muted-foreground list-decimal list-inside">
+              <li>Click <span className="font-medium text-foreground">New event</span> and add the event name, date, venue, details, and optional prize money.</li>
+              <li>Click <span className="font-medium text-foreground">Save draft</span> if details are incomplete; drafts stay hidden from the public website.</li>
+              <li>Click <span className="font-medium text-foreground">Publish event</span> when it is ready; it will appear publicly on Events and the landing page.</li>
+              <li>Use <span className="font-medium text-foreground">Edit</span> anytime to update a draft or published event.</li>
+            </ol>
+          </div>
         </div>
       </Card>
 
@@ -210,11 +234,11 @@ function ManageEventsPage() {
                       ? new Date(ev.event_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
                       : "Date TBA"}
                   </div>
-                  {isPast && (
-                    <span className="text-[10px] font-medium uppercase tracking-wide px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-                      Past
-                    </span>
-                  )}
+                  <div className="flex items-center gap-1.5">
+                    {ev.status === "draft" && <Badge variant="secondary" className="text-[10px]">Draft</Badge>}
+                    {ev.status === "published" && <Badge variant="outline" className="text-[10px]">Published</Badge>}
+                    {isPast && ev.status === "published" && <Badge variant="secondary" className="text-[10px]">Past</Badge>}
+                  </div>
                 </div>
                 <h3 className="font-display font-semibold mt-2 line-clamp-2">{ev.name}</h3>
                 {ev.venue && (
@@ -225,7 +249,7 @@ function ManageEventsPage() {
                 {ev.description && <p className="text-sm text-muted-foreground mt-3 line-clamp-3">{ev.description}</p>}
                 {ev.prize_money != null && (
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-3">
-                    <Users className="size-3" /> ₹{Number(ev.prize_money).toLocaleString("en-IN")} prize pool
+                    <Trophy className="size-3" /> ₹{Number(ev.prize_money).toLocaleString("en-IN")} prize pool
                   </div>
                 )}
                 <div className="flex-1" />
@@ -248,7 +272,7 @@ function ManageEventsPage() {
           <DialogHeader>
             <DialogTitle>{editing ? "Edit event" : "New event"}</DialogTitle>
             <DialogDescription>
-              Add a competition, workshop, or meetup — set any past or future date.
+              Save as draft while details are incomplete, or publish when it is ready for public registrations.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={submit} className="space-y-4">
@@ -276,8 +300,11 @@ function ManageEventsPage() {
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+              <Button type="button" variant="secondary" disabled={submitting} onClick={() => void saveEvent("draft")}>
+                {submitting ? "Saving…" : "Save draft"}
+              </Button>
               <Button type="submit" disabled={submitting} className="bg-accent text-accent-foreground hover:bg-accent/90">
-                {submitting ? "Saving…" : editing ? "Save changes" : "Create event"}
+                {submitting ? "Publishing…" : editing ? "Publish changes" : "Publish event"}
               </Button>
             </DialogFooter>
           </form>

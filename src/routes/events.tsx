@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
-import { Calendar, MapPin, Users, CheckCircle2 } from "lucide-react";
+import { Calendar, MapPin, Trophy, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/events")({
@@ -31,7 +31,7 @@ type EventRow = {
   event_date: string | null;
   venue: string | null;
   description: string | null;
-  expected_attendees: number | null;
+  prize_money: number | null;
 };
 
 function EventsPage() {
@@ -41,7 +41,8 @@ function EventsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("events")
-        .select("id, name, event_date, venue, description, expected_attendees")
+        .select("id, name, event_date, venue, description, prize_money")
+        .eq("status", "published")
         .order("event_date", { ascending: true, nullsFirst: false });
       if (error) throw error;
       return data as EventRow[];
@@ -77,9 +78,9 @@ function EventsPage() {
                   </div>
                 )}
                 {ev.description && <p className="text-sm text-muted-foreground mt-3 line-clamp-3">{ev.description}</p>}
-                {ev.expected_attendees && (
+                {ev.prize_money != null && (
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-3">
-                    <Users className="size-3" /> {ev.expected_attendees}+ expected
+                    <Trophy className="size-3" /> ₹{Number(ev.prize_money).toLocaleString("en-IN")} prize pool
                   </div>
                 )}
                 <div className="flex-1" />

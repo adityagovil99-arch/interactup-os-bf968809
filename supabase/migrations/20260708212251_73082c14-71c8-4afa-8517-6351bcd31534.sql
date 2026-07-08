@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "admin manage roles" ON public.user_roles;

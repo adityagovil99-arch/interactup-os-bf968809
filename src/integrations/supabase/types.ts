@@ -386,6 +386,7 @@ export type Database = {
           judges: string[] | null
           name: string
           prize_money: number | null
+          status: string
           updated_at: string
           venue: string | null
         }
@@ -400,6 +401,7 @@ export type Database = {
           judges?: string[] | null
           name: string
           prize_money?: number | null
+          status?: string
           updated_at?: string
           venue?: string | null
         }
@@ -414,6 +416,7 @@ export type Database = {
           judges?: string[] | null
           name?: string
           prize_money?: number | null
+          status?: string
           updated_at?: string
           venue?: string | null
         }
