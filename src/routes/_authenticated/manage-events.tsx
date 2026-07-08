@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { PageHeader } from "@/components/page-header";
@@ -30,8 +30,7 @@ type EventRow = {
   event_date: string | null;
   venue: string | null;
   description: string | null;
-  expected_attendees: number | null;
-  budget: number | null;
+  prize_money: number | null;
 };
 
 type FormState = {
@@ -39,13 +38,11 @@ type FormState = {
   event_date: string;
   venue: string;
   description: string;
-  expected_attendees: string;
-  budget: string;
+  prize_money: string;
 };
 
 const empty: FormState = {
-  name: "", event_date: "", venue: "", description: "",
-  expected_attendees: "", budget: "",
+  name: "", event_date: "", venue: "", description: "", prize_money: "",
 };
 
 function ManageEventsPage() {
@@ -59,12 +56,15 @@ function ManageEventsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
+  // Ensure session/JWT is fresh so RLS `is_staff(auth.uid())` evaluates against current claims.
+  useEffect(() => { void supabase.auth.refreshSession(); }, []);
+
   const events = useQuery({
     queryKey: ["events", "manage-all"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("events")
-        .select("id, name, event_date, venue, description, expected_attendees, budget")
+        .select("id, name, event_date, venue, description, prize_money")
         .order("event_date", { ascending: false, nullsFirst: false });
       if (error) throw error;
       return (data as EventRow[]) ?? [];
@@ -112,8 +112,7 @@ function ManageEventsPage() {
       event_date: ev.event_date ?? "",
       venue: ev.venue ?? "",
       description: ev.description ?? "",
-      expected_attendees: ev.expected_attendees?.toString() ?? "",
-      budget: ev.budget?.toString() ?? "",
+      prize_money: ev.prize_money?.toString() ?? "",
     });
     setDialogOpen(true);
   };
@@ -127,14 +126,18 @@ function ManageEventsPage() {
       event_date: form.event_date || null,
       venue: form.venue.trim() || null,
       description: form.description.trim() || null,
-      expected_attendees: form.expected_attendees ? Number(form.expected_attendees) : null,
-      budget: form.budget ? Number(form.budget) : null,
+      prize_money: form.prize_money ? Number(form.prize_money) : null,
     };
     const { error } = editing
       ? await supabase.from("events").update(payload).eq("id", editing.id)
       : await supabase.from("events").insert(payload);
     setSubmitting(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      console.error("[events] save failed", error);
+      return toast.error(
+        `${error.message}${error.code ? ` (code ${error.code})` : ""}${error.hint ? ` — ${error.hint}` : ""}`,
+      );
+    }
     toast.success(editing ? "Event updated" : "Event created");
     setDialogOpen(false);
     qc.invalidateQueries({ queryKey: ["events"] });
@@ -220,9 +223,9 @@ function ManageEventsPage() {
                   </div>
                 )}
                 {ev.description && <p className="text-sm text-muted-foreground mt-3 line-clamp-3">{ev.description}</p>}
-                {ev.expected_attendees && (
+                {ev.prize_money != null && (
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-3">
-                    <Users className="size-3" /> {ev.expected_attendees}+ expected
+                    <Users className="size-3" /> ₹{Number(ev.prize_money).toLocaleString("en-IN")} prize pool
                   </div>
                 )}
                 <div className="flex-1" />
@@ -267,15 +270,9 @@ function ManageEventsPage() {
               <Label>Description</Label>
               <Textarea rows={4} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="What is this event about?" />
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Expected attendees</Label>
-                <Input type="number" min="0" value={form.expected_attendees} onChange={(e) => setForm({ ...form, expected_attendees: e.target.value })} />
-              </div>
-              <div className="space-y-2">
-                <Label>Budget (₹)</Label>
-                <Input type="number" min="0" step="0.01" value={form.budget} onChange={(e) => setForm({ ...form, budget: e.target.value })} />
-              </div>
+            <div className="space-y-2">
+              <Label>Prize money (₹) <span className="text-muted-foreground font-normal">— optional</span></Label>
+              <Input type="number" min="0" step="0.01" value={form.prize_money} onChange={(e) => setForm({ ...form, prize_money: e.target.value })} placeholder="e.g. 50000" />
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
