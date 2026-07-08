@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { PageHeader } from "@/components/page-header";
@@ -55,6 +55,9 @@ function ManageEventsPage() {
   const [form, setForm] = useState<FormState>(empty);
   const [submitting, setSubmitting] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  // Ensure session/JWT is fresh so RLS `is_staff(auth.uid())` evaluates against current claims.
+  useEffect(() => { void supabase.auth.refreshSession(); }, []);
 
   const events = useQuery({
     queryKey: ["events", "manage-all"],
