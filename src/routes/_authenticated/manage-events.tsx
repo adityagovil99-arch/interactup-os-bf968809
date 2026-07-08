@@ -30,8 +30,7 @@ type EventRow = {
   event_date: string | null;
   venue: string | null;
   description: string | null;
-  expected_attendees: number | null;
-  budget: number | null;
+  prize_money: number | null;
 };
 
 type FormState = {
@@ -39,13 +38,11 @@ type FormState = {
   event_date: string;
   venue: string;
   description: string;
-  expected_attendees: string;
-  budget: string;
+  prize_money: string;
 };
 
 const empty: FormState = {
-  name: "", event_date: "", venue: "", description: "",
-  expected_attendees: "", budget: "",
+  name: "", event_date: "", venue: "", description: "", prize_money: "",
 };
 
 function ManageEventsPage() {
