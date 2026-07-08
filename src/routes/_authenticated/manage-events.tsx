@@ -220,9 +220,9 @@ function ManageEventsPage() {
                   </div>
                 )}
                 {ev.description && <p className="text-sm text-muted-foreground mt-3 line-clamp-3">{ev.description}</p>}
-                {ev.expected_attendees && (
+                {ev.prize_money != null && (
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-3">
-                    <Users className="size-3" /> {ev.expected_attendees}+ expected
+                    <Users className="size-3" /> ₹{Number(ev.prize_money).toLocaleString("en-IN")} prize pool
                   </div>
                 )}
                 <div className="flex-1" />
@@ -267,15 +267,9 @@ function ManageEventsPage() {
               <Label>Description</Label>
               <Textarea rows={4} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="What is this event about?" />
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Expected attendees</Label>
-                <Input type="number" min="0" value={form.expected_attendees} onChange={(e) => setForm({ ...form, expected_attendees: e.target.value })} />
-              </div>
-              <div className="space-y-2">
-                <Label>Budget (₹)</Label>
-                <Input type="number" min="0" step="0.01" value={form.budget} onChange={(e) => setForm({ ...form, budget: e.target.value })} />
-              </div>
+            <div className="space-y-2">
+              <Label>Prize money (₹) <span className="text-muted-foreground font-normal">— optional</span></Label>
+              <Input type="number" min="0" step="0.01" value={form.prize_money} onChange={(e) => setForm({ ...form, prize_money: e.target.value })} placeholder="e.g. 50000" />
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
