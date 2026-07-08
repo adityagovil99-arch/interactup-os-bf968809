@@ -43,6 +43,7 @@ function LandingPage() {
       const { data } = await supabase
         .from("events")
         .select("id, name, event_date, venue, description")
+        .eq("status", "published")
         .or(`event_date.gte.${today},event_date.is.null`)
         .order("event_date", { ascending: true, nullsFirst: false })
         .limit(3);
