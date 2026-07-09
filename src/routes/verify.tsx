@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { PublicTopbar } from "@/components/public-topbar";
 import { Card } from "@/components/ui/card";
@@ -9,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Award, Download, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { downloadCertificate } from "@/lib/certificate-pdf";
+import { getCertificateFileUrl } from "@/lib/certificates.functions";
 
 export const Route = createFileRoute("/verify")({
   head: () => ({
