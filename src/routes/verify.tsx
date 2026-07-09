@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { PublicTopbar } from "@/components/public-topbar";
 import { Card } from "@/components/ui/card";
@@ -9,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Award, Download, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { downloadCertificate } from "@/lib/certificate-pdf";
+import { getCertificateFileUrl } from "@/lib/certificates.functions";
 
 export const Route = createFileRoute("/verify")({
   head: () => ({
@@ -53,8 +55,13 @@ function VerifyPage() {
     setResult(data ?? "notfound");
   };
 
-  const download = () => {
+  const getFileUrl = useServerFn(getCertificateFileUrl);
+  const download = async () => {
     if (!result || result === "notfound") return;
+    try {
+      const { url } = await getFileUrl({ data: { code: result.code } });
+      if (url) { window.open(url, "_blank", "noopener"); return; }
+    } catch { /* fall through to generated PDF */ }
     downloadCertificate({
       recipientName: result.recipient_name ?? "Recipient",
       eventName: result.event_name_snapshot ?? "InteractUp Event",

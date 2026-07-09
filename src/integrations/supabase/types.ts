@@ -422,6 +422,75 @@ export type Database = {
         }
         Relationships: []
       }
+      grants: {
+        Row: {
+          ai_generated: boolean
+          alignment: string | null
+          amount: string | null
+          application_url: string | null
+          country: string | null
+          created_at: string
+          created_by: string | null
+          currency: string | null
+          deadline: string | null
+          eligibility: string | null
+          id: string
+          notes: string | null
+          organization: string | null
+          region: string | null
+          source_url: string | null
+          status: Database["public"]["Enums"]["grant_status"]
+          strategy: Json
+          tags: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          ai_generated?: boolean
+          alignment?: string | null
+          amount?: string | null
+          application_url?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          deadline?: string | null
+          eligibility?: string | null
+          id?: string
+          notes?: string | null
+          organization?: string | null
+          region?: string | null
+          source_url?: string | null
+          status?: Database["public"]["Enums"]["grant_status"]
+          strategy?: Json
+          tags?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          ai_generated?: boolean
+          alignment?: string | null
+          amount?: string | null
+          application_url?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          deadline?: string | null
+          eligibility?: string | null
+          id?: string
+          notes?: string | null
+          organization?: string | null
+          region?: string | null
+          source_url?: string | null
+          status?: Database["public"]["Enums"]["grant_status"]
+          strategy?: Json
+          tags?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       internship_interests: {
         Row: {
           created_at: string
@@ -862,6 +931,14 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "team_member" | "member"
+      grant_status:
+        | "researching"
+        | "shortlisted"
+        | "applying"
+        | "submitted"
+        | "won"
+        | "rejected"
+        | "archived"
       sponsor_status:
         | "lead"
         | "researching"
@@ -1000,6 +1077,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "team_member", "member"],
+      grant_status: [
+        "researching",
+        "shortlisted",
+        "applying",
+        "submitted",
+        "won",
+        "rejected",
+        "archived",
+      ],
       sponsor_status: [
         "lead",
         "researching",

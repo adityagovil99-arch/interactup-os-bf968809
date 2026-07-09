@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { PageHeader } from "@/components/page-header";
@@ -12,8 +12,10 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Award, Copy, Download, Lock, Search } from "lucide-react";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
+} from "@/components/ui/dialog";
+import { Award, Copy, Download, Lock, Search, Trash2, Upload, FileCheck2 } from "lucide-react";
 import { toast } from "sonner";
 import { downloadCertificate } from "@/lib/certificate-pdf";
 
@@ -31,6 +33,7 @@ type Cert = {
   event_id: string;
   event_name_snapshot: string | null;
   issued_at: string;
+  file_url: string | null;
 };
 
 function CertificatesPage() {
@@ -44,6 +47,10 @@ function CertificatesPage() {
   const [submitting, setSubmitting] = useState(false);
   const [search, setSearch] = useState("");
   const [issued, setIssued] = useState<Cert | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<Cert | null>(null);
+  const [uploadTarget, setUploadTarget] = useState<Cert | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const events = useQuery({
     queryKey: ["events", "all"],
@@ -58,7 +65,7 @@ function CertificatesPage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("certificates")
-        .select("id, code, recipient_name, recipient_email, event_id, event_name_snapshot, issued_at")
+        .select("id, code, recipient_name, recipient_email, event_id, event_name_snapshot, issued_at, file_url")
         .order("issued_at", { ascending: false })
         .limit(200);
       return (data as Cert[]) ?? [];
@@ -103,10 +110,9 @@ function CertificatesPage() {
         event_id: eventId,
         event_name_snapshot: event?.name ?? null,
         metadata: description ? { description } : {},
-        // Trigger replaces an empty code with an auto-generated unique one.
         code: code || "",
       })
-      .select("id, code, recipient_name, recipient_email, event_id, event_name_snapshot, issued_at")
+      .select("id, code, recipient_name, recipient_email, event_id, event_name_snapshot, issued_at, file_url")
       .single();
     setSubmitting(false);
     if (error) {
@@ -125,13 +131,56 @@ function CertificatesPage() {
     toast.success("Copied");
   };
 
-  const downloadCert = (c: Cert) => {
+  const downloadCert = async (c: Cert) => {
+    if (c.file_url) {
+      const { data, error } = await supabase.storage.from("documents").createSignedUrl(c.file_url, 300);
+      if (error || !data?.signedUrl) return toast.error("Could not fetch custom PDF");
+      window.open(data.signedUrl, "_blank", "noopener");
+      return;
+    }
     downloadCertificate({
       recipientName: c.recipient_name ?? "Recipient",
       eventName: c.event_name_snapshot ?? "InteractUp Event",
       code: c.code,
       issuedAt: c.issued_at,
     });
+  };
+
+  const del = async (c: Cert) => {
+    if (c.file_url) {
+      await supabase.storage.from("documents").remove([c.file_url]);
+    }
+    const { error } = await supabase.from("certificates").delete().eq("id", c.id);
+    if (error) return toast.error(error.message);
+    toast.success("Certificate deleted");
+    setConfirmDelete(null);
+    qc.invalidateQueries({ queryKey: ["certificates", "list"] });
+  };
+
+  const uploadCustom = async (file: File) => {
+    if (!uploadTarget) return;
+    if (file.type !== "application/pdf") return toast.error("Please choose a PDF file");
+    if (file.size > 10 * 1024 * 1024) return toast.error("PDF must be under 10 MB");
+    setUploading(true);
+    const path = `certificates/${uploadTarget.id}.pdf`;
+    const { error: upErr } = await supabase.storage
+      .from("documents").upload(path, file, { upsert: true, contentType: "application/pdf" });
+    if (upErr) { setUploading(false); return toast.error(upErr.message); }
+    const { error: dbErr } = await supabase.from("certificates").update({ file_url: path }).eq("id", uploadTarget.id);
+    setUploading(false);
+    if (dbErr) return toast.error(dbErr.message);
+    toast.success("Custom PDF uploaded — replaces the generated one");
+    setUploadTarget(null);
+    qc.invalidateQueries({ queryKey: ["certificates", "list"] });
+  };
+
+  const clearCustom = async (c: Cert) => {
+    if (!c.file_url) return;
+    await supabase.storage.from("documents").remove([c.file_url]);
+    const { error } = await supabase.from("certificates").update({ file_url: null }).eq("id", c.id);
+    if (error) return toast.error(error.message);
+    toast.success("Reverted to system-generated PDF");
+    qc.invalidateQueries({ queryKey: ["certificates", "list"] });
   };
 
   return (
@@ -206,12 +255,19 @@ function CertificatesPage() {
           ) : (
             <div className="divide-y divide-border -mx-2">
               {filtered.map((c) => (
-                <div key={c.id} className="flex items-center gap-3 px-2 py-3">
+                <div key={c.id} className="flex items-center gap-2 px-2 py-3">
                   <div className="size-9 rounded-md bg-accent/30 grid place-items-center shrink-0">
                     <Award className="size-4" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium text-sm truncate">{c.recipient_name}</div>
+                    <div className="font-medium text-sm truncate flex items-center gap-2">
+                      {c.recipient_name}
+                      {c.file_url && (
+                        <span className="text-[10px] font-medium text-green-700 dark:text-green-500 inline-flex items-center gap-1">
+                          <FileCheck2 className="size-3" /> custom PDF
+                        </span>
+                      )}
+                    </div>
                     <div className="text-xs text-muted-foreground truncate">{c.event_name_snapshot}</div>
                   </div>
                   <button
@@ -222,8 +278,13 @@ function CertificatesPage() {
                     {c.code} <Copy className="size-3" />
                   </button>
                   <Button size="sm" variant="outline" onClick={() => downloadCert(c)}>
-                    <Download className="size-3.5 mr-1.5" />
-                    PDF
+                    <Download className="size-3.5 mr-1.5" /> PDF
+                  </Button>
+                  <Button size="icon" variant="ghost" onClick={() => setUploadTarget(c)} title="Upload custom PDF">
+                    <Upload className="size-3.5" />
+                  </Button>
+                  <Button size="icon" variant="ghost" onClick={() => setConfirmDelete(c)} title="Delete" className="text-muted-foreground hover:text-destructive">
+                    <Trash2 className="size-3.5" />
                   </Button>
                 </div>
               ))}
@@ -232,6 +293,7 @@ function CertificatesPage() {
         </Card>
       </div>
 
+      {/* Success dialog */}
       <Dialog open={!!issued} onOpenChange={(o) => !o && setIssued(null)}>
         <DialogContent>
           <DialogHeader>
@@ -260,6 +322,62 @@ function CertificatesPage() {
               </Button>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete confirm */}
+      <Dialog open={!!confirmDelete} onOpenChange={(o) => !o && setConfirmDelete(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete certificate?</DialogTitle>
+            <DialogDescription>
+              This permanently removes <span className="font-mono">{confirmDelete?.code}</span> for {confirmDelete?.recipient_name}.
+              The recipient will no longer be able to verify this code.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setConfirmDelete(null)}>Cancel</Button>
+            <Button variant="destructive" onClick={() => confirmDelete && del(confirmDelete)}>Delete</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Upload custom PDF */}
+      <Dialog open={!!uploadTarget} onOpenChange={(o) => !o && setUploadTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Upload custom certificate PDF</DialogTitle>
+            <DialogDescription>
+              Replaces the system-generated PDF for code <span className="font-mono">{uploadTarget?.code}</span>. Recipients will download this file when they verify.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/pdf"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) uploadCustom(f);
+                if (fileInputRef.current) fileInputRef.current.value = "";
+              }}
+            />
+            <Button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+            >
+              <Upload className="size-4 mr-2" />
+              {uploading ? "Uploading…" : "Choose PDF"}
+            </Button>
+            {uploadTarget?.file_url && (
+              <Button variant="outline" className="w-full" onClick={() => { clearCustom(uploadTarget); setUploadTarget(null); }}>
+                Revert to system-generated PDF
+              </Button>
+            )}
+            <p className="text-[11px] text-muted-foreground">Max 10 MB. PDF only.</p>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
