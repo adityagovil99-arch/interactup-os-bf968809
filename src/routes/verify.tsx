@@ -55,8 +55,13 @@ function VerifyPage() {
     setResult(data ?? "notfound");
   };
 
-  const download = () => {
+  const getFileUrl = useServerFn(getCertificateFileUrl);
+  const download = async () => {
     if (!result || result === "notfound") return;
+    try {
+      const { url } = await getFileUrl({ data: { code: result.code } });
+      if (url) { window.open(url, "_blank", "noopener"); return; }
+    } catch { /* fall through to generated PDF */ }
     downloadCertificate({
       recipientName: result.recipient_name ?? "Recipient",
       eventName: result.event_name_snapshot ?? "InteractUp Event",
