@@ -9,6 +9,8 @@ import {
   Scale, Megaphone, BookOpen, HeartHandshake, Users,
 } from "lucide-react";
 import { PublicTopbar } from "@/components/public-topbar";
+import { InitiativesSection } from "@/components/initiatives-section";
+import logoAsset from "@/assets/interactup-logo.png.asset.json";
 import socialJusticeAsset from "@/assets/social-justice.jpeg.asset.json";
 
 export const Route = createFileRoute("/")({
