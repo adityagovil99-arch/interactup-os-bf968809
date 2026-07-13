@@ -87,7 +87,7 @@ function LandingPage() {
               India's MBA Community OS
             </div>
           </motion.div>
-          </motion.div>
+
 
           <motion.h1
             variants={fadeUp}
