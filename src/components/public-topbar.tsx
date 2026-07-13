@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Sparkles, Moon, Sun, LogIn, LayoutDashboard } from "lucide-react";
+import { Moon, Sun, LogIn, LayoutDashboard } from "lucide-react";
+import logoAsset from "@/assets/interactup-logo.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/lib/auth";
@@ -15,9 +16,7 @@ export function PublicTopbar() {
     <header className="sticky top-0 z-30 h-14 border-b border-border bg-background/80 backdrop-blur">
       <div className="mx-auto max-w-6xl h-full px-4 md:px-6 flex items-center gap-3">
         <Link to="/" className="flex items-center gap-2">
-          <div className="size-7 rounded-md bg-accent text-accent-foreground grid place-items-center">
-            <Sparkles className="size-4" strokeWidth={2.5} />
-          </div>
+          <img src={logoAsset.url} alt="InteractUp" className="size-8 object-contain dark:invert" />
           <span className="font-display font-semibold tracking-tight text-sm">InteractUp</span>
         </Link>
 
