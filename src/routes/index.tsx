@@ -80,9 +80,13 @@ function LandingPage() {
           variants={stagger}
           className="relative mx-auto max-w-6xl px-4 md:px-6 pt-16 md:pt-28 pb-16 md:pb-24"
         >
-          <motion.div variants={fadeUp} className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 backdrop-blur px-3 py-1 text-xs font-medium">
-            <Sparkles className="size-3.5" />
-            India's MBA Community OS
+          <motion.div variants={fadeUp} className="flex items-center gap-3 mb-6">
+            <img src={logoAsset.url} alt="InteractUp" className="size-12 md:size-14 object-contain dark:invert" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 backdrop-blur px-3 py-1 text-xs font-medium">
+              <Sparkles className="size-3.5" />
+              India's MBA Community OS
+            </div>
+          </motion.div>
           </motion.div>
 
           <motion.h1
