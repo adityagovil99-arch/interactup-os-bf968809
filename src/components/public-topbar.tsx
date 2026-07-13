@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Sparkles, Moon, Sun, LogIn, LayoutDashboard } from "lucide-react";
+import { Moon, Sun, LogIn, LayoutDashboard } from "lucide-react";
+import logoAsset from "@/assets/interactup-logo.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/lib/auth";
