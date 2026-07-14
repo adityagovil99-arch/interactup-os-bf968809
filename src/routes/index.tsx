@@ -67,25 +67,25 @@ function LandingPage() {
           initial="hidden"
           animate="show"
           variants={stagger}
-          className="mx-auto max-w-7xl w-full px-6 lg:px-8 pt-20 md:pt-28 pb-24 md:pb-36"
+          className="mx-auto max-w-7xl w-full px-6 lg:px-8 pt-14 md:pt-20 pb-16 md:pb-24"
         >
-          <motion.div variants={fadeUp} className="mb-10">
+          <motion.div variants={fadeUp} className="mb-6">
             <span className="inline-flex rounded-full px-4 py-1.5 text-[11px] text-foreground/60 ring-1 ring-foreground/10 hover:ring-foreground/30 transition-all font-mono uppercase tracking-[0.28em] bg-card/40 backdrop-blur-md">
-              Department of Social Justice · India's MBA Community
+              InteractUp · India's MBA Community
             </span>
           </motion.div>
 
           <motion.h1
             variants={fadeUp}
-            className="font-display text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.85] text-foreground mb-10 max-w-5xl"
+            className="font-display text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-[0.9] text-foreground mb-6 max-w-4xl"
           >
             Compete, connect,{" "}
             <span className="text-foreground/25 hover:text-foreground/80 transition-colors duration-700 cursor-default">
-              stand for justice.
+              grow together.
             </span>
           </motion.h1>
 
-          <motion.div variants={fadeUp} className="h-px w-24 bg-foreground/20 mb-10 animate-grow-x" />
+          <motion.div variants={fadeUp} className="h-px w-24 bg-foreground/20 mb-8 animate-grow-x" />
 
           <motion.p variants={fadeUp} className="text-xl md:text-2xl leading-relaxed text-foreground/70 max-w-2xl mb-12">
             InteractUp is the operating system for India's MBA community — case competitions,
