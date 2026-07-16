@@ -16,23 +16,38 @@ export const Route = createFileRoute("/auth")({
       { name: "description", content: "Join the InteractUp MBA community or sign in to your account." },
     ],
   }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s.next === "string" ? s.next : "",
+  }),
   component: AuthPage,
 });
+
+// Only allow same-origin relative paths so we never redirect off-site.
+function safeNext(next: string): string {
+  if (!next.startsWith("/") || next.startsWith("//")) return "";
+  return next;
+}
 
 function AuthPage() {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { next } = Route.useSearch();
   const [tab, setTab] = useState<"signin" | "signup">("signin");
 
   useEffect(() => {
+    const target = safeNext(next);
+    const go = () => {
+      if (target) window.location.replace(target);
+      else navigate({ to: "/dashboard", replace: true });
+    };
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session && pathname === "/auth") navigate({ to: "/dashboard", replace: true });
+      if (data.session && pathname === "/auth") go();
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
-      if (s) navigate({ to: "/dashboard", replace: true });
+      if (s) go();
     });
     return () => sub.subscription.unsubscribe();
-  }, [navigate, pathname]);
+  }, [navigate, pathname, next]);
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-background">
