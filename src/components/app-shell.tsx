@@ -3,7 +3,7 @@ import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   LayoutDashboard, Trophy, Building2, Mail, Calendar, Users, GraduationCap,
   Briefcase, Megaphone, Award, FileText, FileStack, BarChart3, Settings,
-  Sparkles, Menu, Moon, Sun, LogOut, User as UserIcon, ShieldCheck,
+  Menu, Moon, Sun, LogOut, User as UserIcon, ShieldCheck,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import {
 import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
+import logoAsset from "@/assets/interactup-logo.png.asset.json";
 
 type Item = { label: string; to: string; icon: React.ComponentType<{ className?: string }> };
 
@@ -39,8 +40,8 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="h-full flex flex-col bg-sidebar text-sidebar-foreground">
       <div className="px-4 h-14 flex items-center gap-2 border-b border-sidebar-border">
-        <div className="size-7 rounded-md bg-accent text-accent-foreground grid place-items-center">
-          <Sparkles className="size-4" strokeWidth={2.5} />
+        <div className="size-7 rounded-md bg-white grid place-items-center overflow-hidden ring-1 ring-sidebar-border">
+          <img src={logoAsset.url} alt="InteractUp" className="size-6 object-contain" />
         </div>
         <span className="font-display font-semibold tracking-tight text-sm">InteractUp OS</span>
       </div>

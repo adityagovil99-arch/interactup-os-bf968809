@@ -20,8 +20,14 @@ type Initiative = {
   tagline: string;
   description: string;
   image: string;
+  /** External URL (Google Form, LinkedIn group, etc.) or internal path starting with "/". */
+  href: string;
+  cta?: string;
 };
 
+// TODO: replace the placeholder Google Form URLs below with the real ones.
+// Any href starting with "/" is treated as an internal route; anything else
+// opens in a new tab.
 const initiatives: Initiative[] = [
   {
     title: "Core Student Community",
@@ -29,6 +35,8 @@ const initiatives: Initiative[] = [
     description:
       "A dynamic ecosystem with challenges, mock interviews and peer learning that sharpens both soft and hard skills.",
     image: studentCommunity,
+    href: "https://forms.gle/REPLACE_ME_STUDENT",
+    cta: "Register",
   },
   {
     title: "InteractUp Professionals",
@@ -36,6 +44,8 @@ const initiatives: Initiative[] = [
     description:
       "The networking hub for CAs, MBAs and corporate leaders — referrals, industry insights and city meetups.",
     image: professionals,
+    href: "https://forms.gle/REPLACE_ME_PROFESSIONALS",
+    cta: "Join network",
   },
   {
     title: "Connect Circle",
@@ -43,6 +53,8 @@ const initiatives: Initiative[] = [
     description:
       "A peer-to-peer initiative for emotional wellness — turning strangers into a family-like community.",
     image: connectCircle,
+    href: "https://forms.gle/REPLACE_ME_CONNECT",
+    cta: "Join circle",
   },
   {
     title: "LinkedIn Branding Group",
@@ -50,6 +62,8 @@ const initiatives: Initiative[] = [
     description:
       "Master personal branding and grow visibility through peer-to-peer engagement and collaboration.",
     image: linkedinImg,
+    href: "https://forms.gle/REPLACE_ME_LINKEDIN",
+    cta: "Join group",
   },
   {
     title: "Mind Nutrients",
@@ -57,6 +71,8 @@ const initiatives: Initiative[] = [
     description:
       "An invite-only network where 6–7 members simplify complex tools and industry knowledge together.",
     image: mindNutrients,
+    href: "https://forms.gle/REPLACE_ME_MIND",
+    cta: "Apply",
   },
   {
     title: "Start-Up Group",
@@ -64,6 +80,8 @@ const initiatives: Initiative[] = [
     description:
       "Solve bottlenecks, share resources and raise funds with a supportive founder-first community.",
     image: startup,
+    href: "https://forms.gle/REPLACE_ME_STARTUP",
+    cta: "Apply",
   },
   {
     title: "Fluency Sessions",
@@ -71,6 +89,8 @@ const initiatives: Initiative[] = [
     description:
       "Certified coaches, personalized feedback and three weekly sessions to master conversation and stage.",
     image: fluency,
+    href: "https://forms.gle/REPLACE_ME_FLUENCY",
+    cta: "Enroll",
   },
   {
     title: "InspireTalk",
@@ -78,6 +98,8 @@ const initiatives: Initiative[] = [
     description:
       "An exclusive speaker series with industry titans, entrepreneurs and visionary executives.",
     image: inspiretalk,
+    href: "https://forms.gle/REPLACE_ME_INSPIRETALK",
+    cta: "Reserve seat",
   },
   {
     title: "Theatre Group",
@@ -85,6 +107,8 @@ const initiatives: Initiative[] = [
     description:
       "A PAN-India creative platform for performance-based learning through theatre and scriptwriting.",
     image: theatre,
+    href: "https://forms.gle/REPLACE_ME_THEATRE",
+    cta: "Audition",
   },
   {
     title: "InteractUp International",
@@ -92,6 +116,8 @@ const initiatives: Initiative[] = [
     description:
       "Global collaborations, cultural exchanges and international opportunities for continuous improvement.",
     image: international,
+    href: "https://forms.gle/REPLACE_ME_INTERNATIONAL",
+    cta: "Join",
   },
   {
     title: "Blueprint Syndicate",
@@ -99,6 +125,8 @@ const initiatives: Initiative[] = [
     description:
       "Analytical thinking, business models and startup ideation through execution-based learning.",
     image: blueprint,
+    href: "https://forms.gle/REPLACE_ME_BLUEPRINT",
+    cta: "Apply",
   },
   {
     title: "InteractUp Social",
@@ -106,6 +134,8 @@ const initiatives: Initiative[] = [
     description:
       "Our social impact arm — welfare, city meets and community-driven contribution to society.",
     image: social,
+    href: "/city-club",
+    cta: "Start a city club",
   },
   {
     title: "Experience It",
@@ -113,18 +143,27 @@ const initiatives: Initiative[] = [
     description:
       "Immersive fests, offline meetups and flagship experiences that turn members into lifelong friends.",
     image: experience,
+    href: "/events",
+    cta: "See events",
   },
 ];
 
 function InitiativeCard({ item }: { item: Initiative }) {
+  const isExternal = !item.href.startsWith("/");
+  const linkProps = isExternal
+    ? { href: item.href, target: "_blank" as const, rel: "noopener noreferrer" }
+    : { href: item.href };
+
   return (
-    <motion.article
+    <motion.a
+      {...linkProps}
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -6 }}
-      className="group relative overflow-hidden rounded-2xl border border-border bg-card hover:shadow-elegant transition-shadow"
+      className="group relative overflow-hidden rounded-2xl border border-border bg-card hover:shadow-elegant transition-shadow block focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      aria-label={`${item.cta ?? "Open"} — ${item.title}`}
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-muted">
         <motion.img
@@ -150,10 +189,13 @@ function InitiativeCard({ item }: { item: Initiative }) {
         </div>
       </div>
 
-      <div className="p-4">
+      <div className="p-4 flex items-start justify-between gap-3">
         <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
+        <span className="shrink-0 text-xs font-medium text-foreground/80 group-hover:text-accent-foreground group-hover:bg-accent transition-colors rounded-full px-2.5 py-1 border border-border">
+          {item.cta ?? "Open"} →
+        </span>
       </div>
-    </motion.article>
+    </motion.a>
   );
 }
 
