@@ -3,7 +3,7 @@ import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   LayoutDashboard, Trophy, Building2, Mail, Calendar, Users, GraduationCap,
   Briefcase, Megaphone, Award, FileText, FileStack, BarChart3, Settings,
-  Sparkles, Menu, Moon, Sun, LogOut, User as UserIcon, ShieldCheck,
+  Menu, Moon, Sun, LogOut, User as UserIcon, ShieldCheck,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import {
 import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
+import logoAsset from "@/assets/interactup-logo.png.asset.json";
 
 type Item = { label: string; to: string; icon: React.ComponentType<{ className?: string }> };
 
