@@ -40,8 +40,8 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="h-full flex flex-col bg-sidebar text-sidebar-foreground">
       <div className="px-4 h-14 flex items-center gap-2 border-b border-sidebar-border">
-        <div className="size-7 rounded-md bg-accent text-accent-foreground grid place-items-center">
-          <Sparkles className="size-4" strokeWidth={2.5} />
+        <div className="size-7 rounded-md bg-white grid place-items-center overflow-hidden ring-1 ring-sidebar-border">
+          <img src={logoAsset.url} alt="InteractUp" className="size-6 object-contain" />
         </div>
         <span className="font-display font-semibold tracking-tight text-sm">InteractUp OS</span>
       </div>
