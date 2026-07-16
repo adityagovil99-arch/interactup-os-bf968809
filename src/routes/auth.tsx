@@ -53,8 +53,8 @@ function AuthPage() {
     <div className="min-h-screen flex items-center justify-center px-4 bg-background">
       <div className="w-full max-w-md">
         <Link to="/" className="flex items-center justify-center gap-2 mb-6">
-          <div className="size-9 rounded-lg bg-accent text-accent-foreground grid place-items-center">
-            <Sparkles className="size-5" strokeWidth={2.5} />
+          <div className="size-9 rounded-lg bg-white grid place-items-center overflow-hidden ring-1 ring-border">
+            <img src={logoAsset.url} alt="InteractUp" className="size-7 object-contain" />
           </div>
           <span className="font-display text-xl font-semibold tracking-tight">InteractUp</span>
         </Link>
